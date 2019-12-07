@@ -57,7 +57,7 @@ public class StorageDatabaseMovieTheater implements StorageMovieTheater {
             Statement statement = connection.createStatement();
             ResultSet rs = statement.executeQuery(query);
             while (rs.next()) {
-                MovieTheater m  = new MovieTheater(rs.getLong("movietheaterID"), rs.getString("name"), rs.getString("adress"));
+                MovieTheater m = new MovieTheater(rs.getLong("movietheaterID"), rs.getString("name"), rs.getString("adress"));
                 allMovieTheaters.add(m);
             }
             return allMovieTheaters;
@@ -71,25 +71,46 @@ public class StorageDatabaseMovieTheater implements StorageMovieTheater {
     public MovieTheater updateMovieTheater(MovieTheater movieTheater) {
         try {
             Connection connection = ConnectionFactory.getInstance().getConnection();
-            String query = "update movie_theater set name='"+  movieTheater.getName()+"',adress='"+movieTheater.getAdress()+"' where movietheaterid="+movieTheater.getMovieTheaterID();
+            String query = "update movie_theater set name='" + movieTheater.getName() + "',adress='" + movieTheater.getAdress() + "' where movietheaterid=" + movieTheater.getMovieTheaterID();
             Statement statement = connection.createStatement();
             statement.executeUpdate(query);
             return movieTheater;
         } catch (SQLException ex) {
             Logger.getLogger(StorageDatabaseMovieTheater.class.getName()).log(Level.SEVERE, null, ex);
         }
-          return null;
+        return null;
     }
 
     @Override
     public void deleteMovieTheater(MovieTheater movieTheater) {
         try {
             Connection connection = ConnectionFactory.getInstance().getConnection();
-            String query = "delete from movie_theater where movietheaterid ="+  movieTheater.getMovieTheaterID();
+            String query = "delete from movie_theater where movietheaterid =" + movieTheater.getMovieTheaterID();
             Statement statement = connection.createStatement();
             statement.executeUpdate(query);
         } catch (SQLException ex) {
             Logger.getLogger(StorageDatabaseMovieTheater.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+
+    @Override
+    public MovieTheater getMovieTheaterByID(Long theaterid) {
+        try {
+            MovieTheater movieTheater = new MovieTheater();
+            movieTheater.setMovieTheaterID(theaterid);
+            String query = "select * from movie_theater where movietheaterid = " + theaterid;
+            Connection connection = ConnectionFactory.getInstance().getConnection();
+            Statement statement = connection.createStatement();
+            ResultSet rs = statement.executeQuery(query);
+            if (rs.next()) {
+                movieTheater.setAdress(rs.getString("adress"));
+                movieTheater.setName(rs.getString("name"));
+            }
+
+            return movieTheater;
+        } catch (SQLException ex) {
+            Logger.getLogger(StorageDatabaseMovieTheater.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
     }
 }

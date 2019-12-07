@@ -43,4 +43,9 @@ public class ServiceMovieTheaterImpl implements ServiceMovieTheater {
         storageMovieTheater.deleteMovieTheater(movieTheater);
     }
 
+    @Override
+    public MovieTheater getMovieTheaterByID(Long theaterid) {
+        return storageMovieTheater.getMovieTheaterByID(theaterid);
+    }
+
 }

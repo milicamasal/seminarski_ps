@@ -5,6 +5,9 @@
  */
 package ui.forms;
 
+import controller.Controller;
+import javax.swing.JDialog;
+
 /**
  *
  * @author Milica i Nikola
@@ -16,6 +19,12 @@ public class FMainEmployee extends javax.swing.JFrame {
      */
     public FMainEmployee() {
         initComponents();
+        prepareView();
+    }
+    
+    private void prepareView() {
+        setLocationRelativeTo(null);
+        jlblCurrentUser.setText("User: " + Controller.getInstance().getMap().get("current_employee"));
     }
 
     /**
@@ -27,21 +36,72 @@ public class FMainEmployee extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jlblCurrentUser = new javax.swing.JLabel();
+        jMenuBar1 = new javax.swing.JMenuBar();
+        jMenu1 = new javax.swing.JMenu();
+        jMenuProjection = new javax.swing.JMenu();
+        jMenuItemProjectionAdd = new javax.swing.JMenuItem();
+        jMenuItemProjectionChange = new javax.swing.JMenuItem();
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        jlblCurrentUser.setText("User:");
+
+        jMenu1.setText("Edit");
+
+        jMenuProjection.setText("Projection");
+
+        jMenuItemProjectionAdd.setText("Add...");
+        jMenuItemProjectionAdd.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItemProjectionAddActionPerformed(evt);
+            }
+        });
+        jMenuProjection.add(jMenuItemProjectionAdd);
+
+        jMenuItemProjectionChange.setText("Change...");
+        jMenuItemProjectionChange.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItemProjectionChangeActionPerformed(evt);
+            }
+        });
+        jMenuProjection.add(jMenuItemProjectionChange);
+
+        jMenu1.add(jMenuProjection);
+
+        jMenuBar1.add(jMenu1);
+
+        setJMenuBar(jMenuBar1);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(202, Short.MAX_VALUE)
+                .addComponent(jlblCurrentUser, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(42, 42, 42))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(239, Short.MAX_VALUE)
+                .addComponent(jlblCurrentUser)
+                .addGap(26, 26, 26))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void jMenuItemProjectionAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemProjectionAddActionPerformed
+        JDialog d = new FProjection(null, true, FormMode.FORM_ADD);
+        d.setVisible(true);
+    }//GEN-LAST:event_jMenuItemProjectionAddActionPerformed
+
+    private void jMenuItemProjectionChangeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemProjectionChangeActionPerformed
+        JDialog d = new FProjectionSearch(null, true);
+        d.setVisible(true);
+    }//GEN-LAST:event_jMenuItemProjectionChangeActionPerformed
 
     /**
      * @param args the command line arguments
@@ -79,5 +139,11 @@ public class FMainEmployee extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JMenu jMenu1;
+    private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JMenuItem jMenuItemProjectionAdd;
+    private javax.swing.JMenuItem jMenuItemProjectionChange;
+    private javax.swing.JMenu jMenuProjection;
+    private javax.swing.JLabel jlblCurrentUser;
     // End of variables declaration//GEN-END:variables
 }

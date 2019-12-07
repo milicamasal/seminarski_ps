@@ -243,9 +243,12 @@ public class FMovieTheaterNew extends javax.swing.JDialog {
     private void jbtnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnDeleteActionPerformed
         MovieTheater movieTheater = (MovieTheater) jcmbboxAllMovieTheaters.getSelectedItem();
         if (movieTheater != null) {
-            Controller.getInstance().deleteMovieTheater(movieTheater);
-            JOptionPane.showMessageDialog(null, "Movie theater " + movieTheater.getName() + "has been deleted!");
-            prepareView(FormMode.FORM_VIEW);
+            int answer = JOptionPane.showConfirmDialog(null, "Are you sure you want to delete " + movieTheater.getName() + "?");
+            if (answer == 0) {
+                Controller.getInstance().deleteMovieTheater(movieTheater);
+                JOptionPane.showMessageDialog(null, "Movie theater " + movieTheater.getName() + "has been deleted!");
+                prepareView(FormMode.FORM_VIEW);
+            }
         } else {
             JOptionPane.showMessageDialog(null, "Choose movie theater that you want to delete!");
             jcmbboxAllMovieTheaters.setBorder(BorderFactory.createLineBorder(Color.RED, 5));
@@ -261,7 +264,6 @@ public class FMovieTheaterNew extends javax.swing.JDialog {
         }
     }//GEN-LAST:event_jcmbboxAllMovieTheatersActionPerformed
 
-    
     public void prepareView(FormMode formMode) {
 
         setLocationRelativeTo(null);
@@ -300,7 +302,7 @@ public class FMovieTheaterNew extends javax.swing.JDialog {
             jbtnSave.setVisible(false);
             jbtnUpdate.setVisible(false);
             jbtnAddAnother.setVisible(false);
-            jbtnDelete.setVisible(true);
+            jbtnDelete.setVisible(false);
         }
 
     }

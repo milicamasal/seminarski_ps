@@ -5,6 +5,8 @@
  */
 package domain;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Date;
 
 /**
@@ -12,20 +14,39 @@ import java.util.Date;
  * @author Milica i Nikola
  */
 public class Projection {
+
     private Movie movie;
     private Long projectionID;
-    private Date dateAndTime;
+    private LocalDate date;
+    private LocalTime time;
+    private User createdByEmployee;
     private String screen;
-    private Employee createdByEmployee;
     private MovieTheater theater;
+
+    public LocalDate getDate() {
+        return date;
+    }
+
+    public void setDate(LocalDate date) {
+        this.date = date;
+    }
+
+    public LocalTime getTime() {
+        return time;
+    }
+
+    public void setTime(LocalTime time) {
+        this.time = time;
+    }
 
     public Projection() {
     }
 
-    public Projection(Movie movie, Long projectionID, Date dateAndTime, String screen, Employee createdByEmployee, MovieTheater theater) {
+    public Projection(Movie movie, Long projectionID, LocalDate date, LocalTime time, String screen, User createdByEmployee, MovieTheater theater) {
         this.movie = movie;
         this.projectionID = projectionID;
-        this.dateAndTime = dateAndTime;
+        this.date = date;
+        this.time = time;
         this.screen = screen;
         this.createdByEmployee = createdByEmployee;
         this.theater = theater;
@@ -55,14 +76,6 @@ public class Projection {
         this.projectionID = projectionID;
     }
 
-    public Date getDateAndTime() {
-        return dateAndTime;
-    }
-
-    public void setDateAndTime(Date dateAndTime) {
-        this.dateAndTime = dateAndTime;
-    }
-
     public String getScreen() {
         return screen;
     }
@@ -71,12 +84,14 @@ public class Projection {
         this.screen = screen;
     }
 
-    public Employee getCreatedByEmployee() {
+    public User getCreatedByEmployee() {
         return createdByEmployee;
     }
 
-    public void setCreatedByEmployee(Employee createdByEmployee) {
+    public void setCreatedByEmployee(User createdByEmployee) {
         this.createdByEmployee = createdByEmployee;
     }
-    
+
+ 
+
 }

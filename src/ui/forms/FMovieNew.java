@@ -10,9 +10,12 @@ import domain.Actor;
 import domain.Admin;
 import domain.Genre;
 import domain.Movie;
+import domain.User;
 import java.awt.Color;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -37,6 +40,7 @@ public class FMovieNew extends javax.swing.JDialog {
     public FMovieNew(java.awt.Frame parent, boolean modal, FormMode formmode) {
         super(parent, modal);
         initComponents();
+        jtblLeadCast.setModel(new TableModelLeadCast(new ArrayList<Actor>()));
         setFormmode(formmode);
         prepareView(formmode);
     }
@@ -89,6 +93,7 @@ public class FMovieNew extends javax.swing.JDialog {
         jbtnUpdate = new javax.swing.JButton();
         jbtnChange = new javax.swing.JButton();
         jbtnAddAnother = new javax.swing.JButton();
+        jbtnDelete = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("New Movie");
@@ -262,6 +267,13 @@ public class FMovieNew extends javax.swing.JDialog {
             }
         });
 
+        jbtnDelete.setText("Delete");
+        jbtnDelete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jbtnDeleteActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -273,11 +285,13 @@ public class FMovieNew extends javax.swing.JDialog {
                 .addComponent(jbtnAddAnother)
                 .addGap(18, 18, 18)
                 .addComponent(jbtnChange)
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jbtnUpdate)
                 .addGap(18, 18, 18)
                 .addComponent(jbtnSaveMovie, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(37, 37, 37))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jbtnDelete)
+                .addGap(4, 4, 4))
             .addGroup(layout.createSequentialGroup()
                 .addGap(10, 10, 10)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -398,7 +412,8 @@ public class FMovieNew extends javax.swing.JDialog {
                     .addComponent(jbtnCancel)
                     .addComponent(jbtnUpdate)
                     .addComponent(jbtnChange)
-                    .addComponent(jbtnAddAnother))
+                    .addComponent(jbtnAddAnother)
+                    .addComponent(jbtnDelete))
                 .addGap(20, 20, 20))
         );
 
@@ -411,43 +426,50 @@ public class FMovieNew extends javax.swing.JDialog {
 
     private void jbtnGenresActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnGenresActionPerformed
         Controller.getInstance().getMap().put("current_fmovienew", this);
+
         JDialog dialog = new FGenres(null, true);
         dialog.setVisible(true);
 
     }//GEN-LAST:event_jbtnGenresActionPerformed
 
     private void jbtnSaveMovieActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnSaveMovieActionPerformed
-        Date date = getSelectedDate();
+        LocalDate date = getSelectedDate();
         List<Actor> actors = (List<Actor>) Controller.getInstance().getMap().get("leadcast");
-        if (date != null && jtblLeadCast.getModel().getRowCount() > 0 && !jtxtMovieTitle.getText().isEmpty() && !jtxtDirector.getText().isEmpty() && !jtxtWriter.getText().isEmpty() && !jtxtDuration.getText().isEmpty() && !jtxtSynopsis.getText().isEmpty()) {
+        if (date != null && !jtxtMovieTitle.getText().isEmpty() && !jtxtDirector.getText().isEmpty() && !jtxtWriter.getText().isEmpty() && !jtxtDuration.getText().isEmpty() && !jtxtSynopsis.getText().isEmpty()) {
             try {
                 if (jtxtGenres.getText().isEmpty()) {
                     jbtnGenres.setBorder(BorderFactory.createLineBorder(Color.RED, 5));
                     JOptionPane.showMessageDialog(this, "You must set genders!");
                 } else {
-                    Long duration = Long.parseLong(jtxtDuration.getText());
-                    if (duration < 0) {
-                        throw new NumberFormatException();
-                    }
+                    if (jtblLeadCast.getModel().getRowCount() == 0) {
+                        JOptionPane.showMessageDialog(null, "Please fill in leadcast!");
+                        jPanel1.setBorder(BorderFactory.createLineBorder(Color.RED, 5));
+                    } else {
+                        Long duration = Long.parseLong(jtxtDuration.getText());
+                        if (duration < 0) {
+                            throw new NumberFormatException();
+                        }
 
-                    Movie movie = new Movie(null, jtxtMovieTitle.getText(), date, (List<Genre>) Controller.getInstance().getMap().get("chosen_genres"), jtxtDirector.getText(), jtxtWriter.getText(), actors, duration, jtxtSynopsis.getText(), new Admin());
-                    for (Actor actor : actors) {
-                        Controller.getInstance().saveActor(actor);
-                    }
-                    movie = Controller.getInstance().saveMovie(movie);
+                        Movie movie = new Movie(null, jtxtMovieTitle.getText(), date, (List<Genre>) Controller.getInstance().getMap().get("chosen_genres"), jtxtDirector.getText(), jtxtWriter.getText(), actors, duration, jtxtSynopsis.getText(), (User) Controller.getInstance().getMap().get("current_admin"));
+                        for (Actor actor : actors) {
+                            Controller.getInstance().saveActor(actor);
+                        }
+                        movie = Controller.getInstance().saveMovie(movie);
 
-                    Controller.getInstance().getMap().put("current_movie", movie);
-                    jbtnAddAnother.setVisible(true);
-                    jtxtMovieID.setText(String.valueOf(movie.getMovieID()));
+                        Controller.getInstance().getMap().put("current_movie", movie);
+                        jbtnAddAnother.setVisible(true);
+                        jtxtMovieID.setText(String.valueOf(movie.getMovieID()));
 
+                        fillMovie(movie);
 //                    setFormmode(FormMode.FORM_VIEW);
-//                    prepareView(FormMode.FORM_VIEW);
+//                   prepareView(FormMode.FORM_VIEW);
+                    }
                 }
             } catch (NumberFormatException nfe) {
                 JOptionPane.showMessageDialog(this, "Duration must be number(positive)!");
             }
         } else {
-            JOptionPane.showMessageDialog(null, "All fields about actor must be filled in!");
+            JOptionPane.showMessageDialog(null, "All fields must be filled in!");
         }
     }//GEN-LAST:event_jbtnSaveMovieActionPerformed
 
@@ -500,9 +522,10 @@ public class FMovieNew extends javax.swing.JDialog {
             Controller.getInstance().getMap().put("current_movie", selectedMovie);
             Controller.getInstance().getMap().put("leadcast", selectedMovie.getLeadCast());
             Controller.getInstance().getMap().put("chosen_genres", selectedMovie.getGenres());
-            setFormmode(FormMode.FORM_VIEW);
-            prepareView(FormMode.FORM_VIEW);
-
+            if (formmode.equals(FormMode.FORM_DELETE)) {
+                setFormmode(FormMode.FORM_VIEW);
+                prepareView(FormMode.FORM_VIEW);
+            }
         }
     }//GEN-LAST:event_jcmbBoxAllMoviesActionPerformed
 
@@ -512,14 +535,18 @@ public class FMovieNew extends javax.swing.JDialog {
     }//GEN-LAST:event_jbtnChangeActionPerformed
 
     private void jbtnUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnUpdateActionPerformed
-        Date date = getSelectedDate();
+        LocalDate date = getSelectedDate();
         List<Actor> actors = (List<Actor>) Controller.getInstance().getMap().get("leadcast");
-        if (date != null && jtblLeadCast.getModel().getRowCount() > 0 && !jtxtMovieTitle.getText().isEmpty() && !jtxtDirector.getText().isEmpty() && !jtxtWriter.getText().isEmpty() && !jtxtDuration.getText().isEmpty() && !jtxtSynopsis.getText().isEmpty()) {
+        if (date != null && !jtxtMovieTitle.getText().isEmpty() && !jtxtDirector.getText().isEmpty() && !jtxtWriter.getText().isEmpty() && !jtxtDuration.getText().isEmpty() && !jtxtSynopsis.getText().isEmpty()) {
             try {
                 if (jtxtGenres.getText().isEmpty()) {
                     jbtnGenres.setBorder(BorderFactory.createLineBorder(Color.RED, 5));
                     JOptionPane.showMessageDialog(this, "You must set genders!");
                 } else {
+                    if (jtblLeadCast.getModel().getRowCount() == 0) {
+                        JOptionPane.showMessageDialog(null, "Please fill in leadcast!");
+                        jPanel1.setBorder(BorderFactory.createLineBorder(Color.RED, 5));
+                    }
                     Long duration = Long.parseLong(jtxtDuration.getText());
                     if (duration < 0) {
                         throw new NumberFormatException();
@@ -535,6 +562,7 @@ public class FMovieNew extends javax.swing.JDialog {
                     movie.setSynopsis(jtxtSynopsis.getText());
                     movie.setTitle(jtxtMovieTitle.getText());
                     movie.setWriter(jtxtWriter.getText());
+                    movie.setReleasedDate(date);
                     for (Actor actor : actors) {
                         Controller.getInstance().saveActor(actor);
                     }
@@ -548,7 +576,7 @@ public class FMovieNew extends javax.swing.JDialog {
                 JOptionPane.showMessageDialog(this, "Duration must be number(positive)!");
             }
         } else {
-            JOptionPane.showMessageDialog(null, "All fields about actor must be filled in!");
+            JOptionPane.showMessageDialog(null, "All fields Fmust be filled in!");
         }
     }//GEN-LAST:event_jbtnUpdateActionPerformed
 
@@ -563,9 +591,23 @@ public class FMovieNew extends javax.swing.JDialog {
         jtxtMovieTitle.setText("");
         jtxtSynopsis.setText("");
         jtxtWriter.setText("");
-
+        jtblLeadCast.setModel(new TableModelLeadCast(new ArrayList()));
         prepareView(FormMode.FORM_ADD);
     }//GEN-LAST:event_jbtnAddAnotherActionPerformed
+
+    private void jbtnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnDeleteActionPerformed
+        Movie selectedMovie = (Movie) jcmbBoxAllMovies.getSelectedItem();
+        if (selectedMovie != null) {
+            int answer = JOptionPane.showConfirmDialog(null, "Are you sure you want to delete " + selectedMovie.getTitle() + "?");
+            if (answer == 0) {
+                Controller.getInstance().deleteMovie(selectedMovie);
+                JOptionPane.showMessageDialog(null, "Movie " + selectedMovie.getTitle() + " has been deleted!");
+                setFormmode(FormMode.FORM_DELETE);
+                prepareView(FormMode.FORM_DELETE);
+            }
+
+        }
+    }//GEN-LAST:event_jbtnDeleteActionPerformed
 
     /**
      * @param args the command line arguments
@@ -630,6 +672,7 @@ public class FMovieNew extends javax.swing.JDialog {
     private javax.swing.JButton jbtnAddAnother;
     private javax.swing.JButton jbtnCancel;
     private javax.swing.JButton jbtnChange;
+    private javax.swing.JButton jbtnDelete;
     private javax.swing.JButton jbtnGenres;
     private javax.swing.JButton jbtnRemoveActor;
     private javax.swing.JButton jbtnSaveMovie;
@@ -659,6 +702,7 @@ public class FMovieNew extends javax.swing.JDialog {
 //        Controller.getInstance().getMap().put("leadcast", actors);
 //        jtblLeadCast.setModel(new TableModelLeadCast((List<Actor>) Controller.getInstance().getMap().get("leadcast")));
         if (mode.equals(FormMode.FORM_ADD)) {
+            fillDate();
             Controller.getInstance().getMap().put("leadcast", null);
             jbtnAddAnother.setVisible(false);
             jbtnChange.setVisible(false);
@@ -666,22 +710,37 @@ public class FMovieNew extends javax.swing.JDialog {
             jcmbBoxAllMovies.setVisible(false);
             jbtnUpdate.setVisible(false);
             fillDate();
+            jtxtLeadCastAs.setVisible(true);//!
+            jtxtLeadCastFirstName.setVisible(true);
+            jtxtLeadCastLastName.setVisible(true);
             jcmbBoxAllMovies.setVisible(false);
             jlblChooseMovie.setVisible(false);
+            jbtnDelete.setVisible(false);
+
+            cbDay.setEnabled(true);
+            cbYear.setEnabled(true);
+            cbMonth.setEnabled(true);
         }
         if (mode.equals(FormMode.FORM_OPENING)) {
             jbtnAddAnother.setVisible(false);
             jlblChooseMovie.setVisible(true);
-            for (Movie movie : Controller.getInstance().getAllMovies()) {
-                jcmbBoxAllMovies.addItem(movie);
-            }
+//            for (Movie movie : Controller.getInstance().getAllMovies()) {
+//                jcmbBoxAllMovies.addItem(movie);
+//            }
             fillDate();
             jcmbBoxAllMovies.setVisible(true);
             jbtnUpdate.setVisible(false);
             jbtnChange.setVisible(true);
+            jbtnDelete.setVisible(false);
 
         }
         if (mode.equals(FormMode.FORM_VIEW)) {
+//            fillDate();
+
+            jcmbBoxAllMovies.removeAllItems();
+            for (Movie movie : Controller.getInstance().getAllMovies()) {
+                jcmbBoxAllMovies.addItem(movie);
+            }
             jbtnAddAnother.setVisible(false);
             jlblChooseMovie.setVisible(false);
             jcmbBoxAllMovies.setVisible(true);
@@ -700,12 +759,57 @@ public class FMovieNew extends javax.swing.JDialog {
             jbtnRemoveActor.setVisible(false);
             jtxtDirector.setEditable(false);
             jtxtDuration.setEditable(false);
+            jtxtLeadCastAs.setVisible(false);//!
+            jtxtLeadCastFirstName.setVisible(false);
+            jtxtLeadCastLastName.setVisible(false);
             jtxtLeadCastAs.setEditable(false);
             jtxtLeadCastFirstName.setEditable(false);
             jtxtLeadCastLastName.setEditable(false);
             jtxtMovieTitle.setEditable(false);
             jtxtSynopsis.setEditable(false);
             jtxtWriter.setEditable(false);
+            jbtnDelete.setVisible(false);
+
+            cbDay.setEnabled(false);
+            cbYear.setEnabled(false);
+            cbMonth.setEnabled(false);
+        }
+        if (mode.equals(FormMode.FORM_DELETE)) {
+//            fillDate();
+            jlblChooseMovie.setVisible(true);
+
+            jcmbBoxAllMovies.removeAllItems();
+
+            for (Movie movie : Controller.getInstance().getAllMovies()) {
+                jcmbBoxAllMovies.addItem(movie);
+
+            }
+
+            jcmbBoxAllMovies.setVisible(true);
+            jlblLeadCastAs.setVisible(false);
+            jlblLeadCastFirstName.setVisible(false);
+            jlblLeadCastLastName.setVisible(false);
+            jlblChooseMovie.setVisible(true);
+
+            //sve ostaje ostalo isto al vrati se kasnije
+            jtxtDirector.setEditable(false);
+            jtxtDuration.setEditable(false);
+            jtxtLeadCastAs.setVisible(false);
+            jtxtLeadCastFirstName.setVisible(false);
+            jtxtLeadCastLastName.setVisible(false);
+            jtxtMovieTitle.setEditable(false);
+            jtxtSynopsis.setEditable(false);
+            jtxtWriter.setEditable(false);
+
+            jbtnDelete.setVisible(true);
+            jbtnSaveMovie.setVisible(false);
+            jbtnAddActor.setVisible(false);
+            jbtnGenres.setVisible(false);
+            jbtnRemoveActor.setVisible(false);
+            jbtnUpdate.setVisible(false);
+            jbtnChange.setVisible(false);
+            jbtnAddAnother.setVisible(false);
+            jbtnCancel.setVisible(true);
         }
         if (mode.equals(FormMode.FORM_UPDATE)) {
             jbtnAddAnother.setVisible(false);
@@ -726,6 +830,7 @@ public class FMovieNew extends javax.swing.JDialog {
             jtxtLeadCastFirstName.setVisible(true);
             jtxtLeadCastLastName.setVisible(true);
             jbtnRemoveActor.setVisible(true);
+            jbtnDelete.setVisible(true);
 
             jtxtDirector.setEditable(true);
             jtxtDuration.setEditable(true);
@@ -736,6 +841,10 @@ public class FMovieNew extends javax.swing.JDialog {
             jtxtSynopsis.setEditable(true);
             jtxtWriter.setEditable(true);
 
+            cbDay.setEnabled(true);
+            cbYear.setEnabled(true);
+            cbMonth.setEnabled(true);
+
         }
 
     }
@@ -745,35 +854,43 @@ public class FMovieNew extends javax.swing.JDialog {
         cbMonth.removeAllItems();
         cbYear.removeAllItems();
         for (int i = 1; i < 32; i++) {
-            cbDay.addItem(i + "");
+            if (i < 10) {
+                cbDay.addItem("0" + i);
+            } else {
+                cbDay.addItem(i + "");
+            }
         }
         for (int i = 1; i < 13; i++) {
-            cbMonth.addItem(i + "");
+
+            if (i < 10) {
+                cbMonth.addItem("0" + i);
+            } else {
+                cbMonth.addItem(i + "");
+            }
         }
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy");
         Date date = new Date();
         int year = Integer.parseInt(sdf.format(date));
-        for (int i = year; i >= 1800; i--) {
+        int year1 = year - 50;
+        for (int i = year; i >= year1; i--) {
             cbYear.addItem(i + "");
         }
     }
 
-    private Date getSelectedDate() {
+    private LocalDate getSelectedDate() {
         String day = (String) cbDay.getSelectedItem();
         String month = (String) cbMonth.getSelectedItem();
         String year = (String) cbYear.getSelectedItem();
-        SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
+        String date = year + "-" + month + "-" + day;
 
-        try {
-            return sdf.parse(day + "." + month + "." + year);
-        } catch (ParseException ex) {
-            ex.printStackTrace();
-        }
-        return null;
+        return LocalDate.parse(date);
+
     }
+
 //FALITI SETDATE za sve
     private void fillMovie(Movie movie) {
         String s = "";
+        fillDate();
         jtxtMovieID.setText(movie.getMovieID() + "");
         jtxtDirector.setText(movie.getDirector());
         jtxtDuration.setText(movie.getDuration().toString());
@@ -783,10 +900,13 @@ public class FMovieNew extends javax.swing.JDialog {
 
         }
         jtxtGenres.setText(s);
-        jtxtMovieTitle.setText(movie.getTitle());
         jtxtSynopsis.setText(movie.getSynopsis());
         jtxtWriter.setText(movie.getWriter());
         jtblLeadCast.setModel(new TableModelLeadCast(movie.getLeadCast()));
+
+        cbDay.setSelectedIndex(movie.getReleasedDate().getDayOfMonth() - 1);
+        cbMonth.setSelectedIndex(movie.getReleasedDate().getMonth().getValue() - 1);
+        cbYear.setSelectedItem(movie.getReleasedDate().getYear() + "");
     }
 
     public FormMode getFormmode() {

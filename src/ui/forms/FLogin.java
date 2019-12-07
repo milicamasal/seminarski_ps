@@ -118,12 +118,14 @@ public class FLogin extends javax.swing.JFrame {
             List<User> allUsers = Controller.getInstance().getAllUsers();
             for (User user : allUsers) {
                 if (user.getUsername().equals(username) && user.getPassword().equals(password)) {
-                    Controller.getInstance().getMap().put("current_user", user);
+                    
 
                     if (user.getUserRole().equals(UserRole.Admin)) {
+                        Controller.getInstance().getMap().put("current_admin", user);
                         JFrame fAdmin = new FMainAdmin();
                         fAdmin.setVisible(true);
                     } else if (user.getUserRole().equals(UserRole.Employee)) {
+                        Controller.getInstance().getMap().put("current_employee", user);
                         JFrame fEmployee = new FMainEmployee();
                         fEmployee.setVisible(true);
                     }

@@ -20,4 +20,6 @@ public interface ServiceMovieTheater {
     public MovieTheater updateMovieTheater(MovieTheater movieTheater);
 
     public void deleteMovieTheater(MovieTheater movieTheater);
+    
+    public MovieTheater getMovieTheaterByID(Long theaterid);
 }

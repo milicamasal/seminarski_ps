@@ -38,12 +38,12 @@ public class FMainAdmin extends javax.swing.JFrame {
         jMenuMovie = new javax.swing.JMenu();
         jMenuItemMovieNew = new javax.swing.JMenuItem();
         jMenuItemMovieChange = new javax.swing.JMenuItem();
+        jMenuItemMovieDelete = new javax.swing.JMenuItem();
         jMenuMovieTheater = new javax.swing.JMenu();
         jMenuItemNewMovieTheater = new javax.swing.JMenuItem();
         jMenuItemChangeMovieTheater = new javax.swing.JMenuItem();
         jMenuUser = new javax.swing.JMenu();
         jMenuItem5 = new javax.swing.JMenuItem();
-        jMenu2 = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -68,6 +68,14 @@ public class FMainAdmin extends javax.swing.JFrame {
             }
         });
         jMenuMovie.add(jMenuItemMovieChange);
+
+        jMenuItemMovieDelete.setText("Delete...");
+        jMenuItemMovieDelete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItemMovieDeleteActionPerformed(evt);
+            }
+        });
+        jMenuMovie.add(jMenuItemMovieDelete);
 
         jMenuAdd.add(jMenuMovie);
 
@@ -105,9 +113,6 @@ public class FMainAdmin extends javax.swing.JFrame {
 
         jMenuBarEdit.add(jMenuAdd);
 
-        jMenu2.setText("Help");
-        jMenuBarEdit.add(jMenu2);
-
         setJMenuBar(jMenuBarEdit);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -131,7 +136,7 @@ public class FMainAdmin extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jMenuItemMovieNewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemMovieNewActionPerformed
-        JDialog dialog = new FMovieNew(this, true,FormMode.FORM_ADD);
+        JDialog dialog = new FMovieNew(this, true, FormMode.FORM_ADD);
         dialog.setVisible(true);
     }//GEN-LAST:event_jMenuItemMovieNewActionPerformed
 
@@ -151,9 +156,14 @@ public class FMainAdmin extends javax.swing.JFrame {
     }//GEN-LAST:event_jMenuItem5ActionPerformed
 
     private void jMenuItemMovieChangeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemMovieChangeActionPerformed
-        JDialog d = new FMovieNew(null, true,FormMode.FORM_OPENING);
+        JDialog d = new FMovieNew(null, true, FormMode.FORM_VIEW);
         d.setVisible(true);
     }//GEN-LAST:event_jMenuItemMovieChangeActionPerformed
+
+    private void jMenuItemMovieDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemMovieDeleteActionPerformed
+        JDialog d = new FMovieNew(null, true, FormMode.FORM_DELETE);
+        d.setVisible(true);
+    }//GEN-LAST:event_jMenuItemMovieDeleteActionPerformed
 
     /**
      * @param args the command line arguments
@@ -192,12 +202,12 @@ public class FMainAdmin extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JMenu jMenu2;
     private javax.swing.JMenu jMenuAdd;
     private javax.swing.JMenuBar jMenuBarEdit;
     private javax.swing.JMenuItem jMenuItem5;
     private javax.swing.JMenuItem jMenuItemChangeMovieTheater;
     private javax.swing.JMenuItem jMenuItemMovieChange;
+    private javax.swing.JMenuItem jMenuItemMovieDelete;
     private javax.swing.JMenuItem jMenuItemMovieNew;
     private javax.swing.JMenuItem jMenuItemNewMovieTheater;
     private javax.swing.JMenu jMenuMovie;
@@ -207,7 +217,8 @@ public class FMainAdmin extends javax.swing.JFrame {
     // End of variables declaration//GEN-END:variables
 
     private void prepareView() {
-        User user = (User) Controller.getInstance().getMap().get("current_user");
+        setLocationRelativeTo(null);
+        User user = (User) Controller.getInstance().getMap().get("current_admin");
         jlblLoggedUser.setText("User: " + user.getFirstName() + " " + user.getLastName());
     }
 }

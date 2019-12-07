@@ -44,6 +44,16 @@ public class ServiceMovieImpl implements ServiceMovie {
         return storageMovie.updateMovie(movie);
     }
 
+    @Override
+    public void deleteMovie(Movie movie) {
+        storageMovie.deleteMovie(movie);
+    }
+
+    @Override
+    public Movie getMovieById(Long movieid) {
+        return storageMovie.getMovieById(movieid);
+    }
+
     
 
 }

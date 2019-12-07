@@ -10,5 +10,5 @@ package ui.forms;
  * @author Milica i Nikola
  */
 public enum FormMode {
-    FORM_ADD, FORM_VIEW, FORM_UPDATE,FORM_OPENING;
+    FORM_ADD, FORM_VIEW, FORM_UPDATE,FORM_OPENING,FORM_DELETE;
 }

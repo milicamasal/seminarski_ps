@@ -19,4 +19,8 @@ public interface StorageMovie {
     public List<Movie> getAllMovies();
     
     Movie updateMovie(Movie movie);
+    
+    public void deleteMovie(Movie movie);
+    
+    public Movie getMovieById(Long movieid);
 }

@@ -38,12 +38,12 @@ public class StorageDatabaseMovie implements StorageMovie {
             String query = "insert into movie(title,released_date,director,writer,duration,synopsis,created_by_adminid) values(?,?,?,?,?,?,?)";
             PreparedStatement preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
             preparedStatement.setString(1, movie.getTitle());
-            preparedStatement.setDate(2, new Date(movie.getReleasedDate().getTime()));
+            preparedStatement.setDate(2, Date.valueOf(movie.getReleasedDate()));
             preparedStatement.setString(3, movie.getDirector());
             preparedStatement.setString(4, movie.getWriter());
             preparedStatement.setLong(5, movie.getDuration());
             preparedStatement.setString(6, movie.getSynopsis());
-            preparedStatement.setLong(7, ((User) Controller.getInstance().getMap().get("current_user")).getUserID());
+            preparedStatement.setLong(7, ((User) Controller.getInstance().getMap().get("current_admin")).getUserID());
             preparedStatement.executeUpdate();
 
             ResultSet rs = preparedStatement.getGeneratedKeys();
@@ -109,7 +109,7 @@ public class StorageDatabaseMovie implements StorageMovie {
                 Movie movie = new Movie();
                 movie.setMovieID(rs.getLong("m.movieid"));
                 movie.setTitle(rs.getString("m.title"));
-                movie.setReleasedDate(new java.util.Date(rs.getDate("m.released_date").getTime()));
+                movie.setReleasedDate((rs.getDate("m.released_date")).toLocalDate());
                 movie.setDirector(rs.getString("m.director"));
                 movie.setWriter(rs.getString("m.writer"));
                 movie.setDuration(rs.getLong("m.duration"));
@@ -167,8 +167,8 @@ public class StorageDatabaseMovie implements StorageMovie {
     public Movie updateMovie(Movie movie) {
         try {
             Connection connection = ConnectionFactory.getInstance().getConnection();
-            String query = "update movie set title='" + movie.getTitle() + "',released_date='" + new Date(movie.getReleasedDate().getTime()) + "',director='" + movie.getDirector()
-                    + "',writer='" + movie.getWriter() + "',duration=" + movie.getDuration() + ",synopsis='" + movie.getSynopsis() + "' where movieid="+movie.getMovieID();
+            String query = "update movie set title='" + movie.getTitle() + "',released_date='" + Date.valueOf(movie.getReleasedDate()) + "',director='" + movie.getDirector()
+                    + "',writer='" + movie.getWriter() + "',duration=" + movie.getDuration() + ",synopsis='" + movie.getSynopsis() + "' where movieid=" + movie.getMovieID();
 
             Statement statement = connection.createStatement();
             statement.executeUpdate(query);
@@ -210,6 +210,75 @@ public class StorageDatabaseMovie implements StorageMovie {
                     preparedStatement.executeUpdate();
                 }
             }
+
+            return movie;
+        } catch (SQLException ex) {
+            Logger.getLogger(StorageDatabaseMovie.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+
+    @Override
+    public void deleteMovie(Movie movie) {
+        try {
+            Connection connection = ConnectionFactory.getInstance().getConnection();
+            String query = "delete from movie_genres where movieid=" + movie.getMovieID();
+            Statement statement = connection.createStatement();
+            statement.executeUpdate(query);
+
+            query = "delete from movie_actor where movieid=" + movie.getMovieID();
+            statement.executeUpdate(query);
+
+            query = "delete from movie where movieid=" + movie.getMovieID();
+
+            statement.executeUpdate(query);
+
+        } catch (SQLException ex) {
+
+        }
+    }
+
+    @Override
+    public Movie getMovieById(Long movieid) {
+        try {
+            Connection connection = ConnectionFactory.getInstance().getConnection();
+            Statement statement = connection.createStatement();
+            String query = "select * from movie where movieid = " + movieid;
+            ResultSet rs = statement.executeQuery(query);
+
+            Movie movie = new Movie();
+            movie.setMovieID(movieid);
+            if (rs.next()) {
+                movie.setTitle(rs.getString("title"));
+                movie.setReleasedDate((rs.getDate("released_date")).toLocalDate());
+                movie.setDirector(rs.getString("director"));
+                movie.setWriter(rs.getString("writer"));
+                movie.setDuration(rs.getLong("duration"));
+                movie.setSynopsis(rs.getString("synopsis"));
+                movie.setCreatedByAdmin(null);
+            }
+            query = "SELECT m.movieid,g.genreid,g.name FROM movie m"
+                    + " JOIN movie_genres mg ON m.movieid=mg.movieid JOIN genres g ON mg.genreid=g.genreid where m.movieid=" + movieid;
+            statement = connection.createStatement();
+            rs = statement.executeQuery(query);
+            List<Genre> genres = new ArrayList<>();
+            while (rs.next()) {
+                genres.add(Genre.valueOf(rs.getString("g.name")));
+            }
+            movie.setGenres(genres);
+
+            query = "SELECT m.movieid,a.actorid,a.firstname,a.lastname,ma.role  FROM movie m "
+                    + "JOIN movie_actor ma ON m.movieid=ma.movieid JOIN actor a ON ma.actorid = a.actorid "
+                    + "where m.movieid=" + movieid;
+
+            statement = connection.createStatement();
+            rs = statement.executeQuery(query);
+            List<Actor> actors = new ArrayList<>();
+            while (rs.next()) {
+                actors.add(new Actor(rs.getLong("a.actorid"), rs.getString("a.firstname"), rs.getString("a.lastname"), rs.getString("ma.role")));
+
+            }
+            movie.setLeadCast(actors);
 
             return movie;
         } catch (SQLException ex) {

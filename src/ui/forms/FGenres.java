@@ -19,6 +19,7 @@ import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JOptionPane;
+import oracle.jrockit.jfr.tools.ConCatRepository;
 
 /**
  *
@@ -166,6 +167,9 @@ public class FGenres extends javax.swing.JDialog {
                     Controller.getInstance().getMap().put("chosen_genres", chosenGenres);
                     FMovieNew openedForm = (FMovieNew) Controller.getInstance().getMap().get("current_fmovienew");
                     openedForm.getJtxtGenres().setText(genres);
+                    Movie movie = (Movie)Controller.getInstance().getMap().get("current_movie");
+                    movie.setGenres(chosenGenres);
+                    Controller.getInstance().getMap().put("current_movie",movie);
                 }
                 dispose();
             }

@@ -62,6 +62,12 @@ public class FUserNew extends javax.swing.JDialog {
 
         jLabel1.setText("Works at:");
 
+        jcmbboxAllMovieTheaters.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jcmbboxAllMovieTheatersActionPerformed(evt);
+            }
+        });
+
         jLabel2.setText("First name:");
 
         jLabel3.setText("Last name:");
@@ -247,6 +253,10 @@ public class FUserNew extends javax.swing.JDialog {
         }
     }//GEN-LAST:event_jbtnUpdateActionPerformed
 
+    private void jcmbboxAllMovieTheatersActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jcmbboxAllMovieTheatersActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jcmbboxAllMovieTheatersActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -309,7 +319,8 @@ public class FUserNew extends javax.swing.JDialog {
     // End of variables declaration//GEN-END:variables
 
     private void prepareView(FormMode formmode) {
-
+        setLocationRelativeTo(null);
+        jcmbboxAllMovieTheaters.removeAllItems();
         List<MovieTheater> allMovieTheaters = Controller.getInstance().getAllMovieTheaters();
         for (MovieTheater movieTheater : allMovieTheaters) {
             jcmbboxAllMovieTheaters.addItem(movieTheater);

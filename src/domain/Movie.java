@@ -5,6 +5,7 @@
  */
 package domain;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -16,14 +17,14 @@ public class Movie {
 
     private Long movieID;
     private String title;
-    private Date releasedDate;
+    private LocalDate releasedDate;
     private List<Genre> genres;
     private String director;
     private String writer;
     private List<Actor> leadCast;
     private Long duration;
     private String synopsis;
-    private Admin createdByAdmin;
+    private User createdByAdmin;
 
     public Movie() {
     }
@@ -44,13 +45,6 @@ public class Movie {
         this.title = title;
     }
 
-    public Date getReleasedDate() {
-        return releasedDate;
-    }
-
-    public void setReleasedDate(Date releasedDate) {
-        this.releasedDate = releasedDate;
-    }
 
     public List<Genre> getGenres() {
         return genres;
@@ -68,6 +62,14 @@ public class Movie {
         this.director = director;
     }
 
+    public User getCreatedByAdmin() {
+        return createdByAdmin;
+    }
+
+    public void setCreatedByAdmin(User createdByAdmin) {
+        this.createdByAdmin = createdByAdmin;
+    }
+
     public String getWriter() {
         return writer;
     }
@@ -76,7 +78,7 @@ public class Movie {
         this.writer = writer;
     }
 
-    public Movie(Long movieID, String title, Date releasedDate, List<Genre> genres, String director, String writer, List<Actor> leadCast, Long duration, String synopsis, Admin createdByAdmin) {
+    public Movie(Long movieID, String title, LocalDate releasedDate, List<Genre> genres, String director, String writer, List<Actor> leadCast, Long duration, String synopsis, User createdByAdmin) {
         this.movieID = movieID;
         this.title = title;
         this.releasedDate = releasedDate;
@@ -95,14 +97,6 @@ public class Movie {
 
     public void setSynopsis(String synopsis) {
         this.synopsis = synopsis;
-    }
-
-    public Admin getCreatedByAdmin() {
-        return createdByAdmin;
-    }
-
-    public void setCreatedByAdmin(Admin createdByAdmin) {
-        this.createdByAdmin = createdByAdmin;
     }
 
     public Long getDuration() {
@@ -124,6 +118,14 @@ public class Movie {
     @Override
     public String toString() {
         return title;
+    }
+
+    public LocalDate getReleasedDate() {
+        return releasedDate;
+    }
+
+    public void setReleasedDate(LocalDate releasedDate) {
+        this.releasedDate = releasedDate;
     }
 
 }
